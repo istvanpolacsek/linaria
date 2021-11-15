@@ -1,10 +1,30 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-const { override, useBabelRc, addWebpackModuleRule, addBabelPreset } = require('customize-cra');
+const {
+  override,
+  useBabelRc,
+  addWebpackModuleRule,
+  addBabelPresets,
+  addBabelPlugins,
+} = require('customize-cra');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = override(
-  useBabelRc(),
-  addBabelPreset('@babel/preset-react'),
-  addWebpackModuleRule({
+const presets = [
+  ['@babel/preset-react', { runtime: 'automatic' }],
+  '@babel/preset-env',
+  '@linaria',
+];
+
+const plugins = [
+  '@babel/plugin-syntax-jsx',
+  '@babel/plugin-syntax-dynamic-import',
+  '@babel/plugin-proposal-optional-chaining',
+  '@babel/plugin-proposal-throw-expressions',
+  '@babel/plugin-proposal-class-properties',
+  new MiniCssExtractPlugin({ filename: 'styles.css' }),
+];
+
+const rules = {
+  js: {
     test: /\.(js)$/,
     use: [
       { loader: 'babel-loader' },
@@ -16,5 +36,13 @@ module.exports = override(
         },
       },
     ],
-  }),
-);
+  },
+};
+
+module.exports = override(
+  useBabelRc(),
+  addBabelPresets(...presets),
+  addBabelPlugins(...plugins),
+  addWebpackModuleRule(rules.js),
+)
+;
